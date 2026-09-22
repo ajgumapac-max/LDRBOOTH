@@ -17,6 +17,8 @@ const FRONTEND_ORIGINS = (process.env.FRONTEND_ORIGIN || "http://localhost:5173"
   .map((s) => s.trim())
   .filter(Boolean);
 
+  console.log("[CORS] Allowed frontend origins:", FRONTEND_ORIGINS);
+
 const app = express();
 app.use(cors({ origin: FRONTEND_ORIGINS, credentials: true }));
 app.use(express.json({ limit: "15mb" })); // final composite images are base64 JPEGs
