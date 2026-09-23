@@ -51,7 +51,7 @@ export default function Payment({ status, startedByUsername, isStartedByMe, myUs
           >
             I've sent the payment
           </button>
-          {paymentMode === "mock" && <p className="payment-test-note">Test mode: any reference number is accepted while manual payment verification is being set up.</p>}
+          {paymentMode === "mock" && <p className="payment-test-note">Must be your payment's reference number.</p>}
         </div>
       </div>
     );
