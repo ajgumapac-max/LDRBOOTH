@@ -48,8 +48,8 @@ export default function Photobooth({
     ? partnerUsername
     : myUsername;
 
-  const leftMirrored = creatorIsMe;
-  const rightMirrored = !creatorIsMe;
+  const leftMirrored = true;
+const rightMirrored = true;
 
   useEffect(() => {
     setCount(COUNT_FROM);
