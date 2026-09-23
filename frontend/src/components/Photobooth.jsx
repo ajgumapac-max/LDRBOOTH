@@ -16,12 +16,33 @@ export default function Photobooth({
   partnerUsername,
   mySnapped,
   partnerSnapped,
+  myRole,
   onCapture,
 }) {
   const [count, setCount] = useState(COUNT_FROM);
   const [snap, setSnap] = useState(false);
   const capturedForRound = useRef(-1);
   const pose = findPose(poseId);
+  const creatorIsMe = myRole === "creator";
+
+  const leftVideoRef = creatorIsMe
+    ? localVideoRef
+    : remoteVideoRef;
+
+  const rightVideoRef = creatorIsMe
+    ? remoteVideoRef
+    : localVideoRef;
+
+  const leftUsername = creatorIsMe
+    ? myUsername
+    : partnerUsername;
+
+  const rightUsername = creatorIsMe
+    ? partnerUsername
+    : myUsername;
+
+  const leftMirrored = creatorIsMe;
+  const rightMirrored = !creatorIsMe;
 
   useEffect(() => {
     setCount(COUNT_FROM);
@@ -40,10 +61,15 @@ export default function Photobooth({
           if (capturedForRound.current !== shotIndex) {
             capturedForRound.current = shotIndex;
 
-            const dataUrl = captureVideoPairToDataUrl(
-              localVideoRef.current,
-              remoteVideoRef.current
-            );
+            const dataUrl =
+              captureVideoPairToDataUrl(
+                leftVideoRef.current,
+                rightVideoRef.current,
+                {
+                  mirrorA: leftMirrored,
+                  mirrorB: rightMirrored,
+                }
+              );
 
             onCapture(dataUrl);
           }
@@ -95,36 +121,45 @@ export default function Photobooth({
       ====================================================== */}
       <div className={`camera-stage ${snap ? "camera-stage--snap" : ""}`}>
 
-        <div className="camera-grid">
-          <CameraTile
-            ref={localVideoRef}
-            username={myUsername}
-            muted
-            mirrored
-            status={{
-              text: mySnapped ? "Captured" : "Live",
-              tone: mySnapped ? "captured" : "live",
-            }}
-          />
+      <div className="camera-grid">
+  <CameraTile
+    ref={leftVideoRef}
+    username={leftUsername}
+    muted={creatorIsMe}
+    mirrored={leftMirrored}
+    status={{
+      text: creatorIsMe
+        ? (mySnapped ? "Captured" : "Live")
+        : (partnerSnapped ? "Captured" : "Live"),
+      tone: creatorIsMe
+        ? (mySnapped ? "captured" : "live")
+        : (partnerSnapped ? "captured" : "live"),
+    }}
+  />
 
-          <CameraTile
-            ref={remoteVideoRef}
-            username={partnerUsername}
-            status={{
-              text: partnerSnapped ? "Captured" : "Live",
-              tone: partnerSnapped ? "captured" : "live",
-            }}
-          />
-        </div>
+  <CameraTile
+    ref={rightVideoRef}
+    username={rightUsername}
+    muted={!creatorIsMe}
+    mirrored={rightMirrored}
+    status={{
+      text: creatorIsMe
+        ? (partnerSnapped ? "Captured" : "Live")
+        : (mySnapped ? "Captured" : "Live"),
+      tone: creatorIsMe
+        ? (partnerSnapped ? "captured" : "live")
+        : (mySnapped ? "captured" : "live"),
+    }}
+  />
+</div>
 
         {/* ===================================================
             COUNTDOWN OVERLAY
             Positioned at the exact center of the two cameras.
         ==================================================== */}
         <div
-          className={`countdown countdown--overlay ${
-            snap ? "countdown--snap" : ""
-          }`}
+          className={`countdown countdown--overlay ${snap ? "countdown--snap" : ""
+            }`}
           aria-live="polite"
         >
           {snap ? (

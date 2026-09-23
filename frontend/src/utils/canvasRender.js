@@ -2,35 +2,119 @@
 // JPEG for one capture round. Both participants generate this locally
 // from their own <video> elements — the server just decides when to fire
 // and waits for both copies before advancing (see services/boothStore.js).
-export function captureVideoPairToDataUrl(videoA, videoB, { width = 960, height = 720 } = {}) {
+export function captureVideoPairToDataUrl(
+  videoA,
+  videoB,
+  {
+    width = 960,
+    height = 720,
+    mirrorA = false,
+    mirrorB = false,
+  } = {}
+) {
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
+
   const ctx = canvas.getContext("2d");
+
   ctx.fillStyle = "#FBF3EC";
   ctx.fillRect(0, 0, width, height);
 
   const halfW = width / 2;
-  drawVideoCover(ctx, videoA, 0, 0, halfW, height);
-  drawVideoCover(ctx, videoB, halfW, 0, halfW, height);
+
+  drawVideoCover(
+    ctx,
+    videoA,
+    0,
+    0,
+    halfW,
+    height,
+    mirrorA
+  );
+
+  drawVideoCover(
+    ctx,
+    videoB,
+    halfW,
+    0,
+    halfW,
+    height,
+    mirrorB
+  );
 
   return canvas.toDataURL("image/jpeg", 0.85);
 }
 
-function drawVideoCover(ctx, video, x, y, w, h) {
+function drawVideoCover(
+  ctx,
+  video,
+  x,
+  y,
+  w,
+  h,
+  mirrored = false
+) {
   if (!video || !video.videoWidth) {
     ctx.fillStyle = "#EFE3D8";
     ctx.fillRect(x, y, w, h);
     return;
   }
+
   const vw = video.videoWidth;
   const vh = video.videoHeight;
-  const scale = Math.max(w / vw, h / vh);
+
+  const scale = Math.max(
+    w / vw,
+    h / vh
+  );
+
   const sw = w / scale;
   const sh = h / scale;
+
   const sx = (vw - sw) / 2;
   const sy = (vh - sh) / 2;
-  ctx.drawImage(video, sx, sy, sw, sh, x, y, w, h);
+
+  ctx.save();
+
+  if (mirrored) {
+    /*
+     * Match the CSS:
+     * transform: scaleX(-1)
+     *
+     * This makes the exported image use
+     * the exact same left/right orientation
+     * as the mirrored live camera preview.
+     */
+    ctx.translate(x + w, y);
+    ctx.scale(-1, 1);
+
+    ctx.drawImage(
+      video,
+      sx,
+      sy,
+      sw,
+      sh,
+      0,
+      0,
+      w,
+      h
+    );
+  } else {
+    ctx.drawImage(
+      video,
+      sx,
+      sy,
+      sw,
+      sh,
+      x,
+      y,
+      w,
+      h
+    );
+  }
+
+  ctx.restore();
 }
 
 // Renders the final photo composition: chosen shots, in the chosen order,

@@ -474,6 +474,7 @@ export default function App() {
           myUsername={myUsername}
           partnerUsername={partner?.username}
           mySnapped={mySnapped}
+          myRole={myRole}
           onCapture={handleCapture}
         />
       )}
