@@ -238,7 +238,35 @@ export default function App() {
         roomCode,
         isCreator,
         onRemoteStream: setRemoteStream,
-        onConnectionStateChange: () => {},
+        onConnectionStateChange: (state) => {
+  console.log(
+    "[APP] WebRTC connection state:",
+    state
+  );
+
+  if (
+    state === "connected"
+  ) {
+    setCameraError("");
+    return;
+  }
+
+  if (
+    state === "failed"
+  ) {
+    setCameraError(
+      "The camera connection failed. Please wait while we reconnect."
+    );
+  }
+
+  if (
+    state === "disconnected"
+  ) {
+    setCameraError(
+      "The camera connection was interrupted."
+    );
+  }
+},
         onError: setCameraError,
       });
       webrtcSessionRef.current = session;
