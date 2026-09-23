@@ -215,7 +215,7 @@ export default function Payment({
 
           {paymentMode === "mock" && (
             <p className="payment-test-note">
-              Demo payment mode is currently active.
+              Input your payment reference number here.
             </p>
           )}
 
