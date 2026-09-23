@@ -674,7 +674,7 @@ a {
   padding: 0;
   overflow: hidden;
   cursor: pointer;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
   background: var(--cream-deep);
 }
 .shot-card img {
@@ -830,7 +830,7 @@ a {
   background: var(--cream-deep);
   color: var(--white);
   cursor: grab;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 2;
 }
 .chosen-photo:active { cursor: grabbing; }
 .chosen-photo img, .format-slot img {

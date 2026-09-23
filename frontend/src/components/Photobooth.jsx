@@ -24,6 +24,13 @@ export default function Photobooth({
   const capturedForRound = useRef(-1);
   const pose = findPose(poseId);
   const creatorIsMe = myRole === "creator";
+  console.log(
+  "[PHOTOBOOTH ROLE]",
+  {
+    myRole,
+    creatorIsMe,
+  }
+);
 
   const leftVideoRef = creatorIsMe
     ? localVideoRef

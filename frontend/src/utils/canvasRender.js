@@ -6,8 +6,8 @@ export function captureVideoPairToDataUrl(
   videoA,
   videoB,
   {
-    width = 960,
-    height = 720,
+    width = 1200,
+    height = 800,
     mirrorA = false,
     mirrorB = false,
   } = {}
