@@ -418,9 +418,7 @@ export default function Landing({ onCreate, onJoin }) {
             </h3>
 
             <p>
-              <strong>
-                Josh Andrae Gumapac
-              </strong>
+              <strong className="creator-name">Josh Andrae B. Gumapac</strong>
             </p>
 
             <span>

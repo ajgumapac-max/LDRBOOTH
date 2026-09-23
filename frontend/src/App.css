@@ -6,7 +6,7 @@
 :root {
   --cream: #fbf3ec;
   --cream-deep: #f3e6d8;
-  --charcoal: #fa0000;
+  --charcoal: #3a2e2a;
   --charcoal-soft: #6b5a52;
   --pink: #e8879a;
   --pink-deep: #c85c74;
@@ -2545,4 +2545,8 @@ a {
   .step-card {
     min-height: 0;
   }
+}
+
+.creator-name {
+  color: #ffffff;
 }
