@@ -315,35 +315,48 @@ a {
 /* ==========================================================================
    Camera tiles
    ========================================================================== */
-.camera-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+/* ==========================================================================
+   Camera stage + camera tiles
+   ========================================================================== */
+
+.camera-stage {
+  position: relative;
   width: 100%;
   margin: 16px 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--charcoal);
 }
-@media (min-width: 640px) {
-  .camera-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+
+/* Always two columns — including mobile */
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  margin: 0;
 }
 
 .camera-tile {
   position: relative;
-  border-radius: var(--radius-md);
+  min-width: 0;
+  border-radius: 0;
   overflow: hidden;
   background: var(--charcoal);
   aspect-ratio: 3 / 4;
 }
+
 .camera-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .camera-video--mirrored {
   transform: scaleX(-1);
 }
+
 .camera-label {
   position: absolute;
   left: 10px;
@@ -356,11 +369,13 @@ a {
   border-radius: 999px;
   padding: 6px 12px;
 }
+
 .camera-name {
   color: var(--white);
   font-weight: 600;
   font-size: 14px;
 }
+
 .camera-status {
   font-size: 11px;
   font-weight: 600;
@@ -370,12 +385,14 @@ a {
   align-items: center;
   gap: 4px;
 }
+
 .status-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #6fd08c;
 }
+
 .camera-status--captured .status-dot {
   background: var(--gold);
 }
@@ -561,19 +578,84 @@ a {
   height: auto;
   margin: 10px 0;
 }
-.countdown {
-  margin-top: 12px;
-  height: 56px;
+/* ==========================================================================
+   Camera countdown overlay
+   ========================================================================== */
+
+.countdown--overlay {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: grid;
+  place-items: center;
+
+  width: 76px;
+  height: 76px;
+
+  margin: 0;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 3px solid rgba(255, 255, 255, 0.7);
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(60, 45, 40, 0.08);
+
+  pointer-events: none;
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
+
 .countdown__number {
   font-family: var(--font-display);
   font-size: 48px;
+  line-height: 1;
   color: var(--pink-deep);
 }
+
 .countdown__snap {
   font-family: var(--font-display);
-  font-size: 34px;
-  color: var(--gold);
+  font-size: 19px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: var(--charcoal);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Camera flash
+   ========================================================================== */
+
+.camera-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+
+  background: #ffffff;
+
+  pointer-events: none;
+
+  animation: cameraSnapFlash 420ms ease-out forwards;
+}
+
+@keyframes cameraSnapFlash {
+  0% {
+    opacity: 0.95;
+  }
+
+  35% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ==========================================================================

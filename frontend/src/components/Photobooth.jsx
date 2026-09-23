@@ -28,23 +28,44 @@ export default function Photobooth({
     setSnap(false);
     capturedForRound.current = -1;
 
+    let flashTimer = null;
+
     const tick = setInterval(() => {
-      setCount((c) => {
-        if (c <= 1) {
+      setCount((currentCount) => {
+        if (currentCount <= 1) {
           clearInterval(tick);
+
           setSnap(true);
+
           if (capturedForRound.current !== shotIndex) {
             capturedForRound.current = shotIndex;
-            const dataUrl = captureVideoPairToDataUrl(localVideoRef.current, remoteVideoRef.current);
+
+            const dataUrl = captureVideoPairToDataUrl(
+              localVideoRef.current,
+              remoteVideoRef.current
+            );
+
             onCapture(dataUrl);
           }
+
+          flashTimer = setTimeout(() => {
+            setSnap(false);
+          }, 450);
+
           return 0;
         }
-        return c - 1;
+
+        return currentCount - 1;
       });
     }, 1000);
 
-    return () => clearInterval(tick);
+    return () => {
+      clearInterval(tick);
+
+      if (flashTimer) {
+        clearTimeout(flashTimer);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shotIndex]);
 
@@ -54,29 +75,75 @@ export default function Photobooth({
         <span className="shot-counter">
           SHOT {shotIndex + 1} / {totalShots}
         </span>
+
         <h2 className="pose-name">{pose.label}</h2>
-        <p className="pose-instruction">{pose.instruction}</p>
+
+        <p className="pose-instruction">
+          {pose.instruction}
+        </p>
       </div>
 
-      <PoseIllustration poseId={pose.id} className="pose-illustration" />
+      <PoseIllustration
+        poseId={pose.id}
+        className="pose-illustration"
+      />
 
-      <div className="camera-grid">
-        <CameraTile
-          ref={localVideoRef}
-          username={myUsername}
-          muted
-          mirrored
-          status={{ text: mySnapped ? "Captured" : "Live", tone: mySnapped ? "captured" : "live" }}
-        />
-        <CameraTile
-          ref={remoteVideoRef}
-          username={partnerUsername}
-          status={{ text: partnerSnapped ? "Captured" : "Live", tone: partnerSnapped ? "captured" : "live" }}
-        />
-      </div>
+      {/* =====================================================
+          CAMERA STAGE
+          The countdown lives INSIDE this wrapper so it can
+          sit on top of the center of both cameras.
+      ====================================================== */}
+      <div className={`camera-stage ${snap ? "camera-stage--snap" : ""}`}>
 
-      <div className="countdown" aria-live="polite">
-        {snap ? <span className="countdown__snap">SNAP!</span> : <span className="countdown__number">{count}</span>}
+        <div className="camera-grid">
+          <CameraTile
+            ref={localVideoRef}
+            username={myUsername}
+            muted
+            mirrored
+            status={{
+              text: mySnapped ? "Captured" : "Live",
+              tone: mySnapped ? "captured" : "live",
+            }}
+          />
+
+          <CameraTile
+            ref={remoteVideoRef}
+            username={partnerUsername}
+            status={{
+              text: partnerSnapped ? "Captured" : "Live",
+              tone: partnerSnapped ? "captured" : "live",
+            }}
+          />
+        </div>
+
+        {/* ===================================================
+            COUNTDOWN OVERLAY
+            Positioned at the exact center of the two cameras.
+        ==================================================== */}
+        <div
+          className={`countdown countdown--overlay ${
+            snap ? "countdown--snap" : ""
+          }`}
+          aria-live="polite"
+        >
+          {snap ? (
+            <span className="countdown__snap">SNAP!</span>
+          ) : (
+            <span className="countdown__number">{count}</span>
+          )}
+        </div>
+
+        {/* ===================================================
+            WHITE CAMERA FLASH
+            Covers both feeds briefly when the photo is taken.
+        ==================================================== */}
+        {snap && (
+          <div
+            className="camera-flash"
+            aria-hidden="true"
+          />
+        )}
       </div>
     </div>
   );
