@@ -142,13 +142,46 @@ export async function renderFinalComposition({ images, format, style, frame = {}
   });
   ctx.filter = "none";
 
-  // Footer mark
-  ctx.fillStyle = "#3A2E2A";
-  ctx.font = `600 ${Math.round(dimension * 0.024)}px "Fraunces", serif`;
-  ctx.textAlign = "center";
-  ctx.fillText("LDRBOOTH", canvas.width / 2, canvas.height - dimension * 0.02);
+  /*
+  |--------------------------------------------------------------------------
+  | Draw user decorations
+  |--------------------------------------------------------------------------
+  | These must be drawn BEFORE the LDRBOOTH watermark so the watermark
+  | remains the final branded element at the bottom.
+  |--------------------------------------------------------------------------
+  */
+  drawFrameOverlays(
+    ctx,
+    canvas.width,
+    canvas.height,
+    frame.overlays || [],
+    dimension
+  );
 
-  return canvas.toDataURL("image/jpeg", 0.92);
+  // Footer mark
+  ctx.save();
+
+  ctx.fillStyle = "#3A2E2A";
+  ctx.font = `600 ${Math.round(
+    dimension * 0.024
+  )}px "Fraunces", serif`;
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  ctx.fillText(
+    "LDRBOOTH",
+    canvas.width / 2,
+    canvas.height -
+      dimension * 0.02
+  );
+
+  ctx.restore();
+
+  return canvas.toDataURL(
+    "image/jpeg",
+    0.92
+  );
 }
 
 // Kept public for the editor board. This prevents the visual editor from
@@ -228,6 +261,107 @@ function drawFramePattern(ctx, width, height, pattern) {
     for (let y = 22; y < height; y += 34) for (let x = 16; x < width; x += 34) ctx.fillText(mark, x, y);
   }
   ctx.restore();
+}
+
+function drawFrameOverlays(
+  ctx,
+  canvasW,
+  canvasH,
+  overlays = [],
+  dimension
+) {
+  if (!Array.isArray(overlays)) {
+    return;
+  }
+
+  overlays.forEach((overlay) => {
+    if (!overlay || !overlay.content) {
+      return;
+    }
+
+    const x =
+      Number(overlay.x || 0.5) *
+      canvasW;
+
+    const y =
+      Number(overlay.y || 0.5) *
+      canvasH;
+
+    /*
+    |--------------------------------------------------------------------------
+    | FONT SIZE
+    |--------------------------------------------------------------------------
+    | BuildLayout stores fontScale as a fraction of the final dimension.
+    |--------------------------------------------------------------------------
+    */
+    const fontSize = Math.max(
+      12,
+      Number(
+        overlay.fontScale ||
+          0.03
+      ) * dimension
+    );
+
+    ctx.save();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    if (
+      overlay.type === "sticker"
+    ) {
+      /*
+      * Emoji stickers need a regular sans-serif/emoji capable font.
+      * The browser/device supplies the platform's emoji glyphs.
+      */
+      ctx.font = `${Math.round(
+        fontSize
+      )}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+
+      ctx.fillStyle =
+        overlay.color ||
+        "#3A2E2A";
+
+      ctx.fillText(
+        overlay.content,
+        x,
+        y
+      );
+    } else {
+      /*
+      * User text.
+      */
+      ctx.font = `600 ${Math.round(
+        fontSize
+      )}px "Fraunces", Georgia, serif`;
+
+      ctx.fillStyle =
+        overlay.color ||
+        "#3A2E2A";
+
+      /*
+      * Small shadow makes text readable over photos.
+      */
+      ctx.shadowColor =
+        "rgba(255,255,255,0.85)";
+
+      ctx.shadowBlur =
+        Math.max(
+          2,
+          Math.round(
+            dimension * 0.004
+          )
+        );
+
+      ctx.fillText(
+        overlay.content,
+        x,
+        y
+      );
+    }
+
+    ctx.restore();
+  });
 }
 
 function drawImageCover(ctx, img, x, y, w, h) {

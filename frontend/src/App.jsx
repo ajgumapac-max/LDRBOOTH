@@ -59,7 +59,13 @@ export default function App() {
 
   // ---- layout / style ----
   const [layoutOrder, setLayoutOrder] = useState([]);
-  const [layoutCustomization, setLayoutCustomization] = useState({ borderColor: "#FBF3EC", borderThickness: 1, pattern: "none" });
+ const [layoutCustomization, setLayoutCustomization] =
+  useState({
+    borderColor: "#FBF3EC",
+    borderThickness: 1,
+    pattern: "none",
+    overlays: [],
+  });
   const [style, setStyle] = useState(null);
   const [finalImageUrl, setFinalImageUrl] = useState(null);
   const [finalImageLoading, setFinalImageLoading] = useState(false);
