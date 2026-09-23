@@ -19,7 +19,6 @@ export default function Delivery({ status, downloadUrl, error, myEmail, onPrint 
   return (
     <div className="screen screen--center">
       <h2 className="section-title">Your photos are ready ❤️</h2>
-      <p className="section-hint">We've sent a download link to {myEmail}. It expires in 1 hour.</p>
 
       <div className="stack stack--row">
         <a className="btn btn--primary btn--lg" href={downloadUrl} download="ldrbooth.jpg" target="_blank" rel="noreferrer">
