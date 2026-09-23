@@ -121,8 +121,8 @@ export default function Payment({
 
   if (status === "processing" && isStartedByMe) {
     const isReferenceValid =
-      reference.trim().length >= 8 &&
-      reference.trim().length <= 30 &&
+      reference.trim().length >= 13 &&
+      reference.trim().length <= 13 &&
       /^[A-Za-z0-9]+$/.test(reference.trim());
 
     return (
